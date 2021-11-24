@@ -5,6 +5,7 @@ import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { config } from "./config/config";
 import { TaskResolver } from "./resolvers/TaskResolver";
+import { ProjectResolver } from "./resolvers/ProjectResolver";
 
 export async function bootstrap() {
 	console.log(config);
@@ -16,7 +17,7 @@ export async function bootstrap() {
 	});
 
 	const schema = await buildSchema({
-		resolvers: [TaskResolver],
+		resolvers: [TaskResolver, ProjectResolver],
 	});
 
 	const server = new ApolloServer({
