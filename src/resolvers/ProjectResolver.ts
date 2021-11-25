@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Arg } from "type-graphql";
-import { Project, ProjectInput } from "../models/Project";
+import { Project, ProjectInput, ProjectUpdateInput } from "../models/Project";
 import { getRepository } from "typeorm";
 
 @Resolver()
@@ -34,7 +34,7 @@ export class ProjectResolver {
 	async deleteProject(
 		@Arg("projectID") projectID: string
 	): Promise<Project | undefined | null> {
-		const allProjects = await getRepository(Project);
+		const allProjects = await this.projectRepository;
 		const project = await allProjects.findOne(projectID);
 		if (project) {
 			await allProjects.delete(projectID);
@@ -45,12 +45,14 @@ export class ProjectResolver {
 
 	// Update a project
 	@Mutation(() => Project!) async updateProject(
-		@Arg("project", () => ProjectInput) newProjectData: Project,
+		@Arg("project", () => ProjectUpdateInput) newProjectData: Project,
 		@Arg("projectID") projectID: number
 	): Promise<Project | null> {
 		let project = await Project.findOne(projectID);
 		if (project) {
-			await getRepository(Project).update(projectID, newProjectData);
+			console.log(newProjectData);
+			await this.projectRepository.update(projectID, newProjectData);
+			await project.reload();
 			return project;
 		}
 		return null;
